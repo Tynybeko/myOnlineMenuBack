@@ -2,7 +2,7 @@ import express, { json } from 'express'
 import mongoose from 'mongoose';
 import { checkAuth, handleValidationErrors } from './utils/utils.js'
 import * as Validations from './utils/validations.js'
-import { Users, Cafe, Category, Food } from "./controller/index.js";
+import { Users, Cafe, Category, Food, Table } from "./controller/index.js";
 import cors from 'cors'
 import multer from 'multer';
 
@@ -69,3 +69,9 @@ app.post('/food/create', checkAuth, upload.single('img'), Food.createFood)
 app.get('/foods/:cafeId', Food.getAllFood)
 app.delete('/food/delete/:foodId', checkAuth, Food.deleteFood)
 app.patch('/food/update/:foodId', checkAuth, upload.single('img'), Food.updateFood)
+
+
+
+app.post(`/table/create`, checkAuth, Table.createTable)
+app.get(`/tables/:cafeId`, Table.getAllTables)
+app.delete(`/table/delete/:tableId`, checkAuth, Table.deleteTable)

@@ -5,6 +5,7 @@ import fs from 'fs'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url';
 import path from 'path'
+import { log } from 'console'
 
 
 
@@ -48,7 +49,20 @@ export const createFood = async (req, res) => {
 
 export const getAllFood = async (req, res) => {
     try {
-        const foods = await FoodSchema.find({ cafeId: req.params.cafeId })
+        let queryCond = {}
+        const { page, limit, search, ...someQuery } = req.query
+        for (let i in someQuery) {
+            queryCond[i] = someQuery[i]
+        }
+        if (search) {
+            const regex = new RegExp(search, 'i')
+            queryCond = { ...queryCond, title: regex };
+        }
+        const foods = await FoodSchema.find({ cafeId: req.params.cafeId, ...queryCond }).sort({ createdAt: -1 })
+            .skip((((limit * page) - limit) || 0))
+            .limit(limit ?? 20)
+
+
         res.status(200).json(foods)
     } catch (e) {
         res.status(500).json({ errror: 'Возникли некоторые ошибки!' })

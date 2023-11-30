@@ -11,7 +11,19 @@ const CafeSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         require: true
+    },
+    address: {
+        city: {
+            type: String,
+        },
+        sreet: {
+            type: String,
+        },
+        build: {
+            type: String,
+        }
     }
+    
 }, {
     timestamps: true
 })
