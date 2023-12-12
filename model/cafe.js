@@ -25,6 +25,9 @@ const CafeSchema = new mongoose.Schema({
     },
     url: {
         type: String,
+    },
+    _chatId: {
+        type: String,
     }
     
 }, {

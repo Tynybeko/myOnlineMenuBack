@@ -70,3 +70,17 @@ export const getCafe = async (req, res) => {
         res.status(500).json({ error: 'Произошла ошибка!' })
     }
 }
+
+
+export const getOneCafe = async (req, res) => {
+    try {
+        const cafe = await CafeSchema.findById(req.params.cafeId)
+        if (cafe) {
+            res.status(200).json(cafe)
+        } else {
+            res.status(400).json({ error: 'Нету доступа!' })
+        }
+    } catch (e) {
+        res.status(500).json({ error: 'Произошла ошибка!' })
+    }
+}

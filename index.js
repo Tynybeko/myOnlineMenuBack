@@ -55,6 +55,7 @@ app.post('/cafe/create', checkAuth, Cafe.createCafe)
 app.patch('/cafe/update', checkAuth, Cafe.updateCafe)
 app.delete('/cafe/delete', checkAuth, Cafe.deleteCafe)
 app.get('/cafe', checkAuth, Cafe.getCafe)
+app.get('/cafe/:cafeId', Cafe.getOneCafe)
 
 
 
