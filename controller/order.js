@@ -7,9 +7,9 @@ export const createOrder = async (req, res) => {
         const order = new Order({
             items: req.body.items,
             table: req.body.table,
-            deliveryAddress: req.body.deliveryAddress
         })
         order.save()
+        res.status(200).json({message: 'Заказ был отправлен!', data: order})
     } catch (e) {
         res.status(500).json({ error: 'Произошла ошибка!', data: e })
     }

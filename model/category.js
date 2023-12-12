@@ -9,7 +9,7 @@ const CategorySchema = new mongoose.Schema({
     cafeId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Cafe',
-        require: true
+        require: true,
     },
     isDelete: {
         type: Boolean,

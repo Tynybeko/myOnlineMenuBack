@@ -22,6 +22,9 @@ const CafeSchema = new mongoose.Schema({
         build: {
             type: String,
         }
+    },
+    url: {
+        type: String,
     }
     
 }, {

@@ -8,7 +8,6 @@ const OrderSchema = new mongoose.Schema({
         }
     ],
     table: { type: mongoose.Schema.Types.ObjectId, ref: 'Table' },
-    deliveryAddress: { type: String },
 }, { timestamps: true });
 
 export default mongoose.model('Order', OrderSchema);
