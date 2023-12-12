@@ -1,4 +1,4 @@
-import Order from '../model/order'
+import Order from '../model/order.js'
 
 
 
