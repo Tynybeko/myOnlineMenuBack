@@ -1,6 +1,7 @@
 import CafeSchema from '../model/cafe.js'
 import UserSchema from '../model/user.js'
 import FoodSchema from '../model/food.js'
+import CategorySchema from '../model/category.js'
 
 export const createCafe = async (req, res) => {
     try {
@@ -76,7 +77,11 @@ export const getOneCafe = async (req, res) => {
     try {
         const cafe = await CafeSchema.findById(req.params.cafeId)
         if (cafe) {
-            res.status(200).json(cafe)
+            let categories = await CategorySchema.find({cafeId: cafe._id})
+            res.status(200).json({
+                cafe,
+                categories
+            })
         } else {
             res.status(400).json({ error: 'Нету доступа!' })
         }
