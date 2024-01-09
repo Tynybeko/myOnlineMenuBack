@@ -9,6 +9,7 @@ export const createCategory = async (req, res) => {
         if (cafe && cafe.userId == req.userId) {
             const category = new CategorySchema({
                 title: req.body.title,
+                title_ky: req.body.title_ky ?? '',
                 cafeId: cafe._id,
             })
             await category.save()
@@ -68,6 +69,7 @@ export const updateCategory = async (req, res) => {
     try {
         const doc = await CategorySchema.findByIdAndUpdate(req.params.catId, {
             title: req.body.title,
+            title_ky: req.body.title_ky ?? '',
             cafeId: req.body.cafeId
         }, { new: true })
         if (!doc) {

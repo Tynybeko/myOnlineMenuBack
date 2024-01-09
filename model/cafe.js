@@ -16,20 +16,28 @@ const CafeSchema = new mongoose.Schema({
         city: {
             type: String,
         },
-        sreet: {
+        street: {
             type: String,
         },
         build: {
             type: String,
         }
     },
+    logo: {
+        type: String,
+        default: ''
+    },
+    back: {
+        type: String,
+        default: ''
+    },
+
     url: {
         type: String,
     },
     _chatId: {
         type: String,
-    }
-    
+    },
 }, {
     timestamps: true
 })

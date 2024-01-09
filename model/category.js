@@ -6,6 +6,9 @@ const CategorySchema = new mongoose.Schema({
         type: String,
         require: true,
     },
+    title_ky: {
+        type: String,
+    },
     cafeId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Cafe',
@@ -14,6 +17,10 @@ const CategorySchema = new mongoose.Schema({
     isDelete: {
         type: Boolean,
         default: true,
+    },
+    disabled: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true

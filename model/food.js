@@ -5,6 +5,9 @@ const FoodSchema = new mongoose.Schema({
         require: true,
         type: String,
     },
+    title_ky: {
+        type: String,
+    },
     img: {
         type: String,
         require: true,
@@ -15,6 +18,9 @@ const FoodSchema = new mongoose.Schema({
         ref: "Category"
     },
     desc: {
+        type: String,
+    },
+    desc_ky: {
         type: String,
     },
     price: {
@@ -32,6 +38,12 @@ const FoodSchema = new mongoose.Schema({
     },
     catTitle: {
         type: String,
+    },
+    recipe: {
+        type: Array,
+    },
+    recipe_ky: {
+        type: Array,
     }
 }, {
     timestamps: true

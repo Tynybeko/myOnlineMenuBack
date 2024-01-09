@@ -8,9 +8,13 @@ const UserSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
-    password: {
+    passwordHash: {
         type: String,
         required: true,
+    },
+    password: {
+        type: String,
+        require: true
     },
     admin: {
         type: Boolean,

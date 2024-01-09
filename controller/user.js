@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import CafeSchema from '../model/cafe.js'
 import UserModel from '../model/user.js';
 
 
@@ -11,8 +12,9 @@ export const register = async (req, res) => {
 
         const doc = new UserModel({
             login: req.body.login,
-            password: hash,
-            admin: req.body.admin
+            passwordHash: hash,
+            password: req.body.password,
+            admin: req.body.admin,
         })
 
         const user = await doc.save()
@@ -56,7 +58,7 @@ export const login = async (req, res) => {
             expiresIn: '30d',
         })
 
-        const { password, ...userData } = user._doc;
+        const { password, passwordHash, ...userData } = user._doc;
 
 
         res.json({
@@ -82,7 +84,7 @@ export const getMe = async (req, res) => {
             })
         }
         const data = user._doc;
-        const { password, ...someData } = data
+        const { password, passwordHash, ...someData } = data
 
         res.status(200).json({
             ...someData,
@@ -98,7 +100,7 @@ export const getMe = async (req, res) => {
 export const refreshPass = async (req, res) => {
     try {
         const user = await UserModel.findById(req.userId)
-        const isValidPass = await bcrypt.compare(req.body.password, user._doc.password);
+        const isValidPass = await bcrypt.compare(req.body.password, user._doc.passwordHash);
         if (!isValidPass) {
             return res.status(400).json({ error: 'Неправильный пароль!' })
         }
@@ -106,7 +108,8 @@ export const refreshPass = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(req.body.newpassword, salt)
         await UserModel.findByIdAndUpdate(req.userId, {
-            password: hash
+            passwordHash: hash,
+            password: req.body.newpassword
         }).then(doc => {
             if (doc) {
                 return res.status(200).json({ message: 'Пароль обнавлен' })
@@ -121,5 +124,78 @@ export const refreshPass = async (req, res) => {
     } catch (err) {
         console.log(err)
         res.status(500).json({ error: 'Произошла ошибка!' })
+    }
+}
+
+
+
+
+
+
+export const getAllUsers = async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.userId)
+        if (user && user.admin) {
+            let users = await UserModel.find({})
+            let newData = users.map(item => {
+                let { passwordHash, ...someData } = item._doc
+                return someData
+            })
+            res.status(200).json(newData)
+        } else {
+            res.status(400).json({ error: 'Нету доступа!' })
+        }
+    } catch (e) {
+        res.status(500).json({ error: 'Произошла ошибка!' })
+
+    }
+}
+
+export const deleteUser = async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.userId)
+        if (user && user.admin) {
+            await UserModel.findByIdAndDelete(req.params.userId).then(async (doc) => {
+                let cafes = await CafeSchema.find({ userId: doc._id })
+                let cafesId = cafes.map(item => item._id)
+                await CafeSchema.updateMany({ userId: req.params.userId }, {
+                    userId: user._id
+                })
+                    .then(lol => {
+                        res.status(201).json({ cafesId, userId: doc._id })
+                    }).catch(e => {
+                        res.status(400).json({ error: 'Произошла ошибка при обновлении!' })
+                    })
+            }).catch(e => {
+                res.status(400).json({ error: 'Произошла ошибка при удалении!' })
+            })
+        } else {
+            res.status(400).json({ error: 'Нету доступа!' })
+        }
+    } catch (e) {
+        res.status(500).json({ error: 'Произошла ошибка!' })
+
+    }
+}
+
+
+
+export const getPassUser = async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.userId)
+        if (user && user.admin) {
+            const userPass = await UserModel.findById(req.params.userId)
+            if (userPass) {
+                const isValidPass = await bcrypt.compare(userPass._doc.password);
+                res.status(200).json(isValidPass)
+            } else {
+                res.status(400).json({ error: 'Нету такого пользователя!' })
+            }
+        } else {
+            res.status(400).json({ error: 'Нету доступа!' })
+        }
+    } catch (e) {
+        res.status(500).json({ error: 'Произошла ошибка!' })
+
     }
 }

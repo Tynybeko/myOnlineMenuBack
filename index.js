@@ -2,7 +2,7 @@ import express, { json } from 'express'
 import mongoose from 'mongoose';
 import { checkAuth, handleValidationErrors } from './utils/utils.js'
 import * as Validations from './utils/validations.js'
-import { Users, Cafe, Category, Food, Table, Order } from "./controller/index.js";
+import { Users, Cafe, Category, Food, Table, Order, SubCat, Promotion } from "./controller/index.js";
 import cors from 'cors'
 import multer from 'multer';
 
@@ -44,19 +44,27 @@ const storage = multer.diskStorage(
 const upload = multer({ storage })
 
 
+//  Пользователь
 
 
 app.post('/auth/login', Users.login)
 app.post('/auth/register', Validations.register, handleValidationErrors, Users.register)
 app.get('/auth/me', checkAuth, Users.getMe)
+app.get('/users', checkAuth, Users.getAllUsers)
+app.get('/myPass/:userId', checkAuth, Users.getPassUser)
+app.delete('/delete/user/:userId', checkAuth, Users.deleteUser)
 
+//  Кафе
 
 app.post('/cafe/create', checkAuth, Cafe.createCafe)
 app.patch('/cafe/update', checkAuth, Cafe.updateCafe)
 app.delete('/cafe/delete', checkAuth, Cafe.deleteCafe)
 app.get('/cafe', checkAuth, Cafe.getCafe)
 app.get('/cafe/:cafeId', Cafe.getOneCafe)
+app.get('/cafes',checkAuth, Cafe.getAllCafe)
+app.get('/cafes', Cafe.getAllCafes)
 
+//  Категории
 
 
 app.post('/category/create', checkAuth, Category.createCategory)
@@ -66,16 +74,42 @@ app.delete('/category/delete/:catId', checkAuth, Category.deleteCategory)
 app.patch('/category/update/:catId', checkAuth, Category.updateCategory)
 
 
+// Под Категории
+
+
+app.post('/subcategory/create', checkAuth, SubCat.createSubCategory)
+app.get('/subcategory/:catId', SubCat.getSubCategoryOne)
+app.get('/subcategories/:cafeId', SubCat.getSubCategoryAll)
+app.get('/subcategories/category/:catId', SubCat.getSubCategoryAllCat)
+app.delete('/subcategory/delete/:catId', checkAuth, SubCat.deleteSubCategory)
+app.patch('/subcategory/update/:catId', checkAuth, SubCat.updateSubCategory)
+
+
+// Блюда
+
+
+
 app.post('/food/create', checkAuth, upload.single('img'), Food.createFood)
 app.get('/foods/:cafeId', Food.getAllFood)
+app.get('/foods/category/:catId', Food.getAllFoodCat)
 app.delete('/food/delete/:foodId', checkAuth, Food.deleteFood)
 app.patch('/food/update/:foodId', checkAuth, upload.single('img'), Food.updateFood)
 
+// Столы
 
 
 app.post(`/table/create`, checkAuth, Table.createTable)
 app.get(`/tables/:cafeId`, Table.getAllTables)
 app.delete(`/table/delete/:tableId`, checkAuth, Table.deleteTable)
 
+// Заказы
 
 app.post('/order/create', Order.createOrder)
+
+
+// Акции и Скидки
+
+app.post('/create/promo', checkAuth, upload.single('img'), Promotion.createPromotion)
+app.post('/promo/:cafeId', Promotion.getAllPromo)
+app.patch('/update/promo/:promoId', checkAuth, upload.single('img'), Promotion.updatePromo)
+app.delete('/delete/promo/:promoId', checkAuth, Promotion.deletePromo)

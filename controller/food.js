@@ -1,12 +1,11 @@
 import FoodSchema from '../model/food.js'
 import CategorySchema from '../model/category.js'
 import CafeSchema from '../model/cafe.js'
+import SubCategorySchema from '../model/subCat.js'
 import fs from 'fs'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url';
 import path from 'path'
-import { log } from 'console'
-
 
 
 
@@ -21,11 +20,15 @@ __dirname = path.resolve(__dirname, '..')
 
 export const createFood = async (req, res) => {
     try {
-        const cat = await CategorySchema.findById(req.body.catId)
+        const cat = await SubCategorySchema.findById(req.body.catId)
         if (cat) {
             const food = new FoodSchema({
                 title: req.body.title,
+                title_ky: req.body.title_ky ?? '',
+                desc_ky: req.body.desc_ky ?? '',
                 desc: req.body.desc,
+                recipe_ky: req.body.recipe_ky,
+                recipe: req.body.recipe,
                 catTitle: cat.title,
                 catId: req.body.catId,
                 size: req.body.size,
@@ -47,6 +50,8 @@ export const createFood = async (req, res) => {
 }
 
 
+
+
 export const getAllFood = async (req, res) => {
     try {
         let queryCond = {}
@@ -58,17 +63,41 @@ export const getAllFood = async (req, res) => {
             const regex = new RegExp(search, 'i')
             queryCond = { ...queryCond, title: regex };
         }
+        console.log(queryCond);
         const foods = await FoodSchema.find({ cafeId: req.params.cafeId, ...queryCond }).sort({ createdAt: -1 })
             .skip((((limit * page) - limit) || 0))
             .limit(limit ?? 20)
-
-
         res.status(200).json(foods)
     } catch (e) {
         res.status(500).json({ errror: 'Возникли некоторые ошибки!' })
 
     }
 }
+
+
+export const getAllFoodCat = async (req, res) => {
+    try {
+        const { search, cafeId } = req.query
+        if (search) {
+            const regex = new RegExp(search, 'i')
+            let queryCond = { title: regex }
+            if (cafeId) {
+                queryCond = { ...queryCond, cafeId }
+            }
+            let searFoods = await FoodSchema.find({ ...queryCond })
+            res.status(200).json(searFoods)
+            return
+        }
+        const subCats = await SubCategorySchema.find({ catId: req.params.catId })
+        let subCatsId = [...subCats.map(item => item._id), req.params.catId]
+        const foods = await FoodSchema.find({ catId: { $in: subCatsId } }).sort({ createdAt: -1 })
+        res.status(200).json(foods)
+    } catch (e) {
+        res.status(500).json({ errror: 'Возникли некоторые ошибки!' })
+
+    }
+}
+
 
 export const deleteFood = async (req, res) => {
     try {
@@ -77,8 +106,8 @@ export const deleteFood = async (req, res) => {
             let filePath = __dirname + food.img
             const foodsCafe = await FoodSchema.find({ catId: food.catId })
             if (!foodsCafe.length) {
-                let cat = await CategorySchema.findById(food.catId)
-                if (cat) {
+                let cat = await SubCategorySchema.findById(food.catId)
+                if (!cat) {
                     cat.isDelete = true
                     await cat.save()
                 }

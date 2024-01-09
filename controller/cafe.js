@@ -84,3 +84,32 @@ export const getOneCafe = async (req, res) => {
         res.status(500).json({ error: 'Произошла ошибка!' })
     }
 }
+
+
+
+
+
+export const getAllCafe = async (req, res) => {
+    try {
+        const user = await UserSchema.findById(req.userId)
+        if (user && user.admin) {
+            const cafes = await CafeSchema.find({})
+            res.status(200).json(cafes)
+        } else {
+            res.status(400).json({ error: "У вас нету доступа!" })
+        }
+    } catch (e) {
+        res.status(500).json({ error: 'Произошла ошибка!' })
+
+    }
+}
+
+export const getAllCafes = async (req, res) => {
+    try {
+        const cafes = await CafeSchema.find({})
+        res.status(200).json(cafes)
+    } catch (e) {
+        res.status(500).json({ error: 'Произошла ошибка!' })
+
+    }
+}
