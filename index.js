@@ -62,7 +62,7 @@ app.delete('/cafe/delete', checkAuth, Cafe.deleteCafe)
 app.get('/cafe', checkAuth, Cafe.getCafe)
 app.get('/cafe/:cafeId', Cafe.getOneCafe)
 app.get('/cafes',checkAuth, Cafe.getAllCafe)
-app.get('/cafes', Cafe.getAllCafes)
+app.get('/cafes/all', Cafe.getAllCafes)
 
 //  Категории
 
