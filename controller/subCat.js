@@ -59,6 +59,18 @@ export const getSubCategoryAll = async (req, res) => {
 }
 
 
+export const getAllSubCat = async (req, res) => {
+    try {
+        let categories = await SubCategorySchema.find({ catId: req.params.catId })
+        let catIds = categories.map(item => item._id)
+        let foods = await FoodsSchema.find({ catId: { $in: catIds } })
+        let data = categories.map(item => ({ ...item, value: foods.filter(el => el.catId == item._id) }))
+        res.status(200).json(data)
+    } catch (e) {
+        res.status(500).json({ error: 'Произошла ошибка', data: e })
+    }
+}
+
 
 
 export const getSubCategoryAllCat = async (req, res) => {
