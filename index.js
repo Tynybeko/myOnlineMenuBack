@@ -35,7 +35,9 @@ const storage = multer.diskStorage(
             cb(null, 'uploads')
         },
         filename: (_, file, cb) => {
-            cb(null, Math.random() + file.originalname)
+            let name = String(Math.random()).slice(2)
+            let fileName = file.originalname.split('_').join('')
+            cb(null, name + fileName)
         },
 
     }
