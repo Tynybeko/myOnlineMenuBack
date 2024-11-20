@@ -6,8 +6,8 @@ import { Users, Cafe, Category, Food, Table, Order, SubCat, Promotion } from "./
 import cors from 'cors'
 import multer from 'multer';
 
-
-const uri = "mongodb+srv://tynybeko111222:myonlinemenu@onlinemenu.erzeyob.mongodb.net/test?retryWrites=true&w=majority";
+const mongoPass = process.env.MONGO_DB_PASS
+const uri = `mongodb+srv://tynybeko111222:${mongoPass}@onlinemenu.erzeyob.mongodb.net/test?retryWrites=true&w=majority`;
 const app = express();
 app.use(express.json())
 app.use(cors())
